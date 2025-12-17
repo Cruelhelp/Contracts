@@ -124,8 +124,9 @@
             background: #ffffff;
         }
         .canvas-wrapper {
+            position: relative;
             width: 100%;
-            height: 200px;
+            height: 220px;
             border: 2px solid #000000;
             border-radius: 8px;
             background: #ffffff;
@@ -133,9 +134,11 @@
             margin-bottom: 20px;
         }
         canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            touch-action: none;
         }
         .sig-actions {
             text-align: right;
@@ -239,9 +242,11 @@
 
         <!-- Founder -->
         <div class="sig-box">
-            <div class="sig-header">Founder – Ruel McNeil</div>
+            <div class="sig-header">Ruel McNeil</div>
             <input type="text" class="name-input" id="name-founder" placeholder="Type full name">
-            <div class="canvas-wrapper"><canvas id="canvas-founder"></canvas></div>
+            <div class="canvas-wrapper">
+                <canvas id="canvas-founder"></canvas>
+            </div>
             <div class="sig-actions">
                 <button class="save-sig" onclick="saveSignature('founder')">Save Signature</button>
                 <button class="clear" onclick="clearSignature('founder')">Clear</button>
@@ -259,9 +264,11 @@
 
         <!-- Team Member 1 -->
         <div class="sig-box">
-            <div class="sig-header">Team Member 1 – Ineiko McBean</div>
+            <div class="sig-header">Ineiko McBean</div>
             <input type="text" class="name-input" id="name-tm1" placeholder="Type full name">
-            <div class="canvas-wrapper"><canvas id="canvas-tm1"></canvas></div>
+            <div class="canvas-wrapper">
+                <canvas id="canvas-tm1"></canvas>
+            </div>
             <div class="sig-actions">
                 <button class="save-sig" onclick="saveSignature('tm1')">Save Signature</button>
                 <button class="clear" onclick="clearSignature('tm1')">Clear</button>
@@ -279,9 +286,11 @@
 
         <!-- Team Member 2 -->
         <div class="sig-box">
-            <div class="sig-header">Team Member 2 – Shaquille Simpson</div>
+            <div class="sig-header">Shaquille Simpson</div>
             <input type="text" class="name-input" id="name-tm2" placeholder="Type full name">
-            <div class="canvas-wrapper"><canvas id="canvas-tm2"></canvas></div>
+            <div class="canvas-wrapper">
+                <canvas id="canvas-tm2"></canvas>
+            </div>
             <div class="sig-actions">
                 <button class="save-sig" onclick="saveSignature('tm2')">Save Signature</button>
                 <button class="clear" onclick="clearSignature('tm2')">Clear</button>
@@ -299,9 +308,11 @@
 
         <!-- Team Member 3 -->
         <div class="sig-box">
-            <div class="sig-header">Team Member 3 – Darren Downer</div>
+            <div class="sig-header">Darren Downer</div>
             <input type="text" class="name-input" id="name-tm3" placeholder="Type full name">
-            <div class="canvas-wrapper"><canvas id="canvas-tm3"></canvas></div>
+            <div class="canvas-wrapper">
+                <canvas id="canvas-tm3"></canvas>
+            </div>
             <div class="sig-actions">
                 <button class="save-sig" onclick="saveSignature('tm3')">Save Signature</button>
                 <button class="clear" onclick="clearSignature('tm3')">Clear</button>
@@ -330,28 +341,39 @@
         const pads = {};
         const roles = ['founder', 'tm1', 'tm2', 'tm3'];
 
-        // Format date nicely
         function formatDate(date) {
             return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
         }
 
-        roles.forEach(async (role) => {
+        // Initialize SignaturePad for each canvas
+        roles.forEach((role) => {
             const canvas = document.getElementById(`canvas-${role}`);
-            pads[role] = new SignaturePad(canvas, { backgroundColor: 'rgb(255,255,255)', penColor: 'rgb(0, 0, 0)' });
+            pads[role] = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255,255,255)',
+                penColor: 'rgb(0, 0, 0)'
+            });
 
+            // Proper resize function that preserves signature
             function resizeCanvas() {
+                const data = pads[role].toDataURL();
+
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
                 canvas.width = canvas.offsetWidth * ratio;
                 canvas.height = canvas.offsetHeight * ratio;
                 canvas.getContext('2d').scale(ratio, ratio);
-                pads[role].clear();
-            }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
 
-            // Load existing signature from Supabase
+                pads[role].clear();
+                pads[role].fromDataURL(data);
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas(); // Initial resize
+        });
+
+        // Load signatures from Supabase on page load
+        roles.forEach(async (role) => {
             const { data, error } = await supabase
-                .from('signatures')
+                .from('goatmouth_signatures')
                 .select('name, signature_data, signed_at')
                 .eq('role', role)
                 .single();
@@ -360,20 +382,20 @@
                 document.getElementById(`name-${role}`).value = data.name;
                 pads[role].fromDataURL(data.signature_data);
 
-                // Show preview
                 document.getElementById(`preview-img-${role}`).src = data.signature_data;
                 document.getElementById(`preview-name-${role}`).textContent = data.name;
                 document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date(data.signed_at));
                 document.getElementById(`preview-${role}`).style.display = 'block';
 
-                // Hide input/canvas
-                document.querySelector(`#name-${role}`).style.display = 'none';
+                // Hide signing interface
+                document.getElementById(`name-${role}`).style.display = 'none';
                 document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
-                document.querySelector(`#canvas-${role}`).closest('.sig-actions').previousElementSibling.style.display = 'none'; // actions
+                document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
+
                 document.getElementById(`status-${role}`).textContent = '✓ Already signed';
                 document.getElementById(`status-${role}`).className = 'status-note success';
             } else if (error && error.code !== 'PGRST116') {
-                document.getElementById(`status-${role}`).textContent = 'Error loading signature';
+                document.getElementById(`status-${role}`).textContent = 'Error loading';
                 document.getElementById(`status-${role}`).className = 'status-note error';
             }
         });
@@ -392,28 +414,26 @@
             const now = new Date().toISOString();
 
             const { error } = await supabase
-                .from('signatures')
-                .upsert({ 
-                    role, 
-                    name: nameInput, 
+                .from('goatmouth_signatures')
+                .upsert({
+                    role,
+                    name: nameInput,
                     signature_data: signatureData,
-                    signed_at: now 
+                    signed_at: now
                 }, { onConflict: 'role' });
 
             if (error) {
                 statusEl.textContent = "Save failed: " + error.message;
                 statusEl.className += ' error';
             } else {
-                // Show preview immediately
                 document.getElementById(`preview-img-${role}`).src = signatureData;
                 document.getElementById(`preview-name-${role}`).textContent = nameInput;
                 document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date());
                 document.getElementById(`preview-${role}`).style.display = 'block';
 
-                // Hide signing fields
                 document.getElementById(`name-${role}`).style.display = 'none';
-                document.getElementById(`canvas-${role}`).parentElement.style.display = 'none';
-                document.querySelector(`#canvas-${role}`).closest('.sig-actions').style.display = 'none';
+                document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
+                document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
 
                 statusEl.textContent = '✓ Signed and saved successfully!';
                 statusEl.className += ' success';
@@ -443,10 +463,10 @@
 
     <p class="instructions">
         Instructions:<br>
-        • Type your full name and draw your signature<br>
-        • Click “Save Signature” – your signature will be timestamped and stored<br>
-        • Once saved, everyone will see your signed preview (on any device)<br>
-        • When all four have signed → Download the final PDF
+        • Type your full name and draw your signature (mouse or touch)<br>
+        • Click “Save Signature” – it will be timestamped and stored<br>
+        • Once saved, everyone will see your signed preview<br>
+        • When all have signed → Download the final PDF
     </p>
 
 </body>
