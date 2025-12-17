@@ -239,7 +239,7 @@
 
         <!-- Founder -->
         <div class="sig-box">
-            <div class="sig-header">Ruel McNeil</div>
+            <div class="sig-header">Founder – Ruel McNeil</div>
             <input type="text" class="name-input" id="name-founder" placeholder="Type full name">
             <div class="canvas-wrapper"><canvas id="canvas-founder"></canvas></div>
             <div class="sig-actions">
@@ -259,7 +259,7 @@
 
         <!-- Team Member 1 -->
         <div class="sig-box">
-            <div class="sig-header">Ineiko McBean</div>
+            <div class="sig-header">Team Member 1 – Ineiko McBean</div>
             <input type="text" class="name-input" id="name-tm1" placeholder="Type full name">
             <div class="canvas-wrapper"><canvas id="canvas-tm1"></canvas></div>
             <div class="sig-actions">
@@ -279,7 +279,7 @@
 
         <!-- Team Member 2 -->
         <div class="sig-box">
-            <div class="sig-header">Shaquille Simpson</div>
+            <div class="sig-header">Team Member 2 – Shaquille Simpson</div>
             <input type="text" class="name-input" id="name-tm2" placeholder="Type full name">
             <div class="canvas-wrapper"><canvas id="canvas-tm2"></canvas></div>
             <div class="sig-actions">
@@ -299,7 +299,7 @@
 
         <!-- Team Member 3 -->
         <div class="sig-box">
-            <div class="sig-header">Darren Downer</div>
+            <div class="sig-header">Team Member 3 – Darren Downer</div>
             <input type="text" class="name-input" id="name-tm3" placeholder="Type full name">
             <div class="canvas-wrapper"><canvas id="canvas-tm3"></canvas></div>
             <div class="sig-actions">
@@ -366,11 +366,10 @@
                 document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date(data.signed_at));
                 document.getElementById(`preview-${role}`).style.display = 'block';
 
-                // Hide input fields and canvas
-                document.getElementById(`name-${role}`).style.display = 'none';
+                // Hide input/canvas
+                document.querySelector(`#name-${role}`).style.display = 'none';
                 document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
-                document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
-
+                document.querySelector(`#canvas-${role}`).closest('.sig-actions').previousElementSibling.style.display = 'none'; // actions
                 document.getElementById(`status-${role}`).textContent = '✓ Already signed';
                 document.getElementById(`status-${role}`).className = 'status-note success';
             } else if (error && error.code !== 'PGRST116') {
@@ -405,16 +404,16 @@
                 statusEl.textContent = "Save failed: " + error.message;
                 statusEl.className += ' error';
             } else {
-                // Show preview
+                // Show preview immediately
                 document.getElementById(`preview-img-${role}`).src = signatureData;
                 document.getElementById(`preview-name-${role}`).textContent = nameInput;
                 document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date());
                 document.getElementById(`preview-${role}`).style.display = 'block';
 
-                // Hide signing interface
+                // Hide signing fields
                 document.getElementById(`name-${role}`).style.display = 'none';
-                document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
-                document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
+                document.getElementById(`canvas-${role}`).parentElement.style.display = 'none';
+                document.querySelector(`#canvas-${role}`).closest('.sig-actions').style.display = 'none';
 
                 statusEl.textContent = '✓ Signed and saved successfully!';
                 statusEl.className += ' success';
@@ -445,9 +444,9 @@
     <p class="instructions">
         Instructions:<br>
         • Type your full name and draw your signature<br>
-        • Click “Save Signature” – it will be timestamped and securely stored<br>
-        • Once saved, all team members will see your signature and date<br>
-        • When everyone has signed → Download the final PDF
+        • Click “Save Signature” – your signature will be timestamped and stored<br>
+        • Once saved, everyone will see your signed preview (on any device)<br>
+        • When all four have signed → Download the final PDF
     </p>
 
 </body>
