@@ -162,7 +162,50 @@
         .sig-actions button.clear:hover { background: #e0e0e0; }
         .status-note { font-size: 9pt; margin-top: 8px; text-align: right; font-weight: 600; }
         .status-note.success { color: #006400; }
-        .status-note.error { color: #8b0000; }
+.status-note.error { color: #8b0000; }
+
+        /* Countdown timer displayed for pending signatures */
+        .timer {
+            font-size: 9pt;
+            color: #8b0000;
+            margin-top: 0.1in;
+            text-align: right;
+            font-style: italic;
+        }
+        /* Styles for the final signature summary section */
+        .final-sig-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4in;
+            margin-top: 0.3in;
+        }
+        .final-sig-box {
+            border: 2px solid #000;
+            padding: 0.25in;
+            background: #fafafa;
+            page-break-inside: avoid;
+        }
+        .final-sig-header {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 11pt;
+            font-weight: 700;
+            margin-bottom: 0.1in;
+            padding-bottom: 0.05in;
+            border-bottom: 1px solid #000;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .final-signature-img {
+            max-height: 0.8in;
+            border-bottom: 2px solid #000;
+            margin-bottom: 8px;
+            display: block;
+            width: 100%;
+        }
+        .final-signed-info {
+            font-size: 9pt;
+            line-height: 1.4;
+        }
         .signed-preview { margin-top: 0.1in; padding: 0.1in; background: #fff; border: 1px solid #000; display: none; }
         .signed-preview img { max-height: 0.8in; border-bottom: 2px solid #000; margin-bottom: 8px; display: block; width: 100%; }
         .signed-info { font-size: 9pt; line-height: 1.4; }
@@ -242,6 +285,7 @@
                         <button class="clear" onclick="clearSignature('founder')">Clear</button>
                     </div>
                     <div class="status-note" id="status-founder"></div>
+                    <div class="timer" id="timer-founder"></div>
                     <div class="signed-preview" id="preview-founder">
                         <img id="preview-img-founder" alt="Signature">
                         <div class="signature-line"></div>
@@ -262,6 +306,7 @@
                         <button class="clear" onclick="clearSignature('tm1')">Clear</button>
                     </div>
                     <div class="status-note" id="status-tm1"></div>
+                    <div class="timer" id="timer-tm1"></div>
                     <div class="signed-preview" id="preview-tm1">
                         <img id="preview-img-tm1" alt="Signature">
                         <div class="signature-line"></div>
@@ -282,6 +327,7 @@
                         <button class="clear" onclick="clearSignature('tm2')">Clear</button>
                     </div>
                     <div class="status-note" id="status-tm2"></div>
+                    <div class="timer" id="timer-tm2"></div>
                     <div class="signed-preview" id="preview-tm2">
                         <img id="preview-img-tm2" alt="Signature">
                         <div class="signature-line"></div>
@@ -302,6 +348,7 @@
                         <button class="clear" onclick="clearSignature('tm3')">Clear</button>
                     </div>
                     <div class="status-note" id="status-tm3"></div>
+                    <div class="timer" id="timer-tm3"></div>
                     <div class="signed-preview" id="preview-tm3">
                         <img id="preview-img-tm3" alt="Signature">
                         <div class="signature-line"></div>
@@ -321,7 +368,8 @@
             4. Once all parties have signed, download the final PDF
         </div>
         <button id="download-btn" onclick="downloadPDF()">Download Signed Agreement</button>
-        <div class="document-footer">Page 1 of 4</div>
+        <!-- Updated page numbering for five‑page document -->
+        <div class="document-footer">Page 1 of 5</div>
     </div>
 
     <!-- Page 2: Full Contract Placeholder -->
@@ -355,7 +403,8 @@
         <p><strong>Dispute Resolution:</strong> Members agree to attempt in good faith to resolve any disputes arising under this Agreement through informal negotiation. If the dispute cannot be resolved within thirty&nbsp;(30) days, the members shall submit the matter to binding arbitration in Jamaica under the rules of the Jamaican Arbitration Association. The decision of the arbitrator(s) shall be final and binding. Judgment upon the award may be entered in any court having jurisdiction.</p>
         <p><strong>Governing Law:</strong> This Agreement shall be governed by and construed in accordance with the laws of Jamaica, without regard to its conflict of law principles.</p>
         <p><strong>Entire Agreement:</strong> This Agreement, together with the Company’s operating agreement and any written consents of the members, constitutes the entire agreement among the members with respect to the subject matter hereof and supersedes all prior and contemporaneous agreements or understandings.</p>
-        <div class="document-footer">Page 2 of 4</div>
+        <!-- Updated page numbering for five‑page document -->
+        <div class="document-footer">Page 2 of 5</div>
     </div>
 
     <!-- Page 3: Additional Legal Documents -->
@@ -377,7 +426,8 @@
             <li><strong>Amendment to Operating Agreement</strong> – providing the mechanism by which the operating agreement and this Equity Allocation Agreement may be amended, typically requiring unanimous or supermajority consent.</li>
         </ul>
         <p>These documents should be drafted with the assistance of qualified legal counsel and tailored to the specific circumstances of GoatMouth&nbsp;LLC. Each ancillary agreement is intended to supplement the terms of this Equity Allocation Agreement and the Company’s operating agreement.</p>
-        <div class="document-footer">Page 3 of 4</div>
+        <!-- Updated page numbering for five‑page document -->
+        <div class="document-footer">Page 3 of 5</div>
     </div>
 
     <!-- Page 4: GOATMOUTH Overview -->
@@ -410,17 +460,128 @@
         <p>GOATMOUTH is currently under active development.</p>
         <h2>Disclaimer</h2>
         <p>GOATMOUTH is a prediction platform and does not provide financial or investment advice.</p>
-        <div class="document-footer">Page 4 of 4</div>
+        <!-- Updated page numbering for five‑page document -->
+        <div class="document-footer">Page 4 of 5</div>
+    </div>
+
+    <!-- Page 5: Final Signature Summary -->
+    <div class="page-container">
+        <div class="letterhead">
+            <img src="mainlogo.png" alt="GoatMouth Logo" class="logo">
+            <div class="company-name">GOATMOUTH</div>
+            <div class="company-type">Limited Liability Company</div>
+        </div>
+        <h1>Final Signature Summary</h1>
+        <p class="no-indent">This page summarizes the executed signatures of all parties.</p>
+        <div class="final-sig-grid">
+            <!-- Founder summary -->
+            <div class="final-sig-box">
+                <div class="final-sig-header">Ruel McNeil</div>
+                <img id="final-img-founder" class="final-signature-img" alt="Signature">
+                <div class="final-signed-info">
+                    <strong id="final-name-founder"></strong><br>
+                    Date: <strong id="final-date-founder"></strong>
+                </div>
+            </div>
+            <!-- Team member 1 summary -->
+            <div class="final-sig-box">
+                <div class="final-sig-header">Ineiko McBean</div>
+                <img id="final-img-tm1" class="final-signature-img" alt="Signature">
+                <div class="final-signed-info">
+                    <strong id="final-name-tm1"></strong><br>
+                    Date: <strong id="final-date-tm1"></strong>
+                </div>
+            </div>
+            <!-- Team member 2 summary -->
+            <div class="final-sig-box">
+                <div class="final-sig-header">Shaquille Simpson</div>
+                <img id="final-img-tm2" class="final-signature-img" alt="Signature">
+                <div class="final-signed-info">
+                    <strong id="final-name-tm2"></strong><br>
+                    Date: <strong id="final-date-tm2"></strong>
+                </div>
+            </div>
+            <!-- Team member 3 summary -->
+            <div class="final-sig-box">
+                <div class="final-sig-header">Darren Downer</div>
+                <img id="final-img-tm3" class="final-signature-img" alt="Signature">
+                <div class="final-signed-info">
+                    <strong id="final-name-tm3"></strong><br>
+                    Date: <strong id="final-date-tm3"></strong>
+                </div>
+            </div>
+        </div>
+        <div class="document-footer">Page 5 of 5</div>
     </div>
 
     <script>
     // Supabase configuration
     const SUPABASE_URL = 'https://hvdivdqxsdhabeurwkfb.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2ZGl2ZHF4c2RoYWJldXJ3a2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDkwNDIsImV4cCI6MjA4MTEyNTA0Mn0.h6WOImT19AyGZIrqeRZ1axkPJhftlZtW6HNKD5gRebI';
+    // Attempt to initialize Supabase via UMD build if available; we'll also provide fallback
     const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    // Define helper functions to interact with Supabase REST API as a fallback when the JS client is unavailable
+    async function fetchSignature(role) {
+        try {
+            // Prefer Supabase JS client if available
+            if (supabase) {
+                const { data, error } = await supabase
+                    .from('signatures')
+                    .select('name, signature_data, signed_at')
+                    .eq('role', role)
+                    .maybeSingle();
+                if (error) throw error;
+                return data || null;
+            }
+            // Otherwise use REST API
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/signatures?role=eq.${encodeURIComponent(role)}&select=name,signature_data,signed_at`, {
+                headers: {
+                    apikey: SUPABASE_ANON_KEY,
+                    Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
+            if (!res.ok) throw new Error('Network response was not ok');
+            const json = await res.json();
+            return json && json.length ? json[0] : null;
+        } catch (err) {
+            console.error(`Error fetching signature for ${role}:`, err);
+            return null;
+        }
+    }
+    async function upsertSignature(role, name, signatureData, signedAt) {
+        try {
+            if (supabase) {
+                const { error } = await supabase
+                    .from('signatures')
+                    .upsert({ role, name, signature_data: signatureData, signed_at: signedAt }, { onConflict: 'role', returning: 'minimal' });
+                if (error) throw error;
+                return true;
+            }
+            const body = JSON.stringify([{ role, name, signature_data: signatureData, signed_at: signedAt }]);
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/signatures?on_conflict=role`, {
+                method: 'POST',
+                headers: {
+                    apikey: SUPABASE_ANON_KEY,
+                    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    Prefer: 'resolution=merge-duplicates'
+                },
+                body
+            });
+            if (!res.ok) throw new Error('Failed to save signature');
+            return true;
+        } catch (err) {
+            console.error('Error saving signature:', err);
+            return false;
+        }
+    }
     const { jsPDF } = window.jspdf;
     const pads = {};
     const roles = ['founder', 'tm1', 'tm2', 'tm3'];
+    // Keep track of when the founder signed. Used to compute countdown deadlines.
+    let founderSignedAt = null;
+    // Store countdown interval IDs for each role
+    const countdownIntervals = {};
     function formatDate(date) {
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + ' at ' + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     }
@@ -449,33 +610,81 @@
     }
     window.addEventListener('DOMContentLoaded', () => {
         roles.forEach(role => initSignaturePad(role));
-        if (supabase) {
-            roles.forEach(async role => {
-                try {
-                    const { data, error } = await supabase
-                        .from('signatures')
-                        .select('name, signature_data, signed_at')
-                        .eq('role', role)
-                        .maybeSingle();
-                    if (data && !error) {
-                        document.getElementById(`name-${role}`).value = data.name;
-                        pads[role].fromDataURL(data.signature_data);
-                        document.getElementById(`preview-img-${role}`).src = data.signature_data;
-                        document.getElementById(`preview-name-${role}`).textContent = data.name;
-                        document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date(data.signed_at));
-                        document.getElementById(`preview-${role}`).style.display = 'block';
-                        document.getElementById(`name-${role}`).style.display = 'none';
-                        document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
-                        document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
-                        document.getElementById(`status-${role}`).textContent = '\u2713 Signed and Saved';
-                        document.getElementById(`status-${role}`).className = 'status-note success';
-                    }
-                } catch (err) {
-                    console.error(`Error loading signature for ${role}:`, err);
+        // Load saved signatures from Supabase (using JS client or REST)
+        roles.forEach(async role => {
+            const data = await fetchSignature(role);
+            if (data) {
+                document.getElementById(`name-${role}`).value = data.name;
+                // Load signature into pad and preview
+                pads[role].fromDataURL(data.signature_data);
+                document.getElementById(`preview-img-${role}`).src = data.signature_data;
+                document.getElementById(`preview-name-${role}`).textContent = data.name;
+                document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date(data.signed_at));
+                document.getElementById(`preview-${role}`).style.display = 'block';
+                // Populate the final signature summary for this role
+                updateFinalPreview(role, data.name, data.signature_data, data.signed_at);
+                // Hide input and pad interface
+                document.getElementById(`name-${role}`).style.display = 'none';
+                document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
+                document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
+                document.getElementById(`status-${role}`).textContent = '\u2713 Signed and Saved';
+                document.getElementById(`status-${role}`).className = 'status-note success';
+                // Record founder sign time
+                if (role === 'founder') {
+                    founderSignedAt = new Date(data.signed_at);
                 }
-            });
-        }
+            }
+        });
+        // After loading all signatures, if the founder has signed, start countdowns for pending roles
+        setTimeout(setupCountdowns, 100); // slight delay to ensure DOM is ready
     });
+
+    // Start countdown for each unsigned role once the founder has signed
+    function setupCountdowns() {
+        if (!founderSignedAt) return;
+        roles.forEach(role => {
+            if (role === 'founder') return;
+            // only start timer if no signature preview is visible
+            const previewEl = document.getElementById(`preview-${role}`);
+            const timerEl = document.getElementById(`timer-${role}`);
+            const saveBtn = document.querySelector(`#canvas-${role}`)?.closest('.sig-box')?.querySelector('.save-sig');
+            if (previewEl && previewEl.style.display !== 'block' && timerEl && saveBtn) {
+                startCountdown(role, founderSignedAt, timerEl, saveBtn);
+            }
+        });
+    }
+
+    // Start a countdown timer for the given role using the founder's sign date
+    function startCountdown(role, founderDate, timerEl, saveBtn) {
+        const deadline = founderDate.getTime() + 3 * 24 * 60 * 60 * 1000; // 3 days
+        function updateCountdown() {
+            const now = Date.now();
+            const remaining = deadline - now;
+            if (remaining <= 0) {
+                clearInterval(countdownIntervals[role]);
+                timerEl.textContent = 'Contract sealed';
+                // disable the save button and update its label
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Sealed';
+                return;
+            }
+            const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+            const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+            timerEl.textContent = `Time left: ${days}d ${hours}h ${minutes}m`;
+        }
+        updateCountdown();
+        countdownIntervals[role] = setInterval(updateCountdown, 60000); // update every minute
+    }
+
+    // Stop countdown for a role when they sign
+    function stopCountdown(role) {
+        if (countdownIntervals[role]) {
+            clearInterval(countdownIntervals[role]);
+            document.getElementById(`timer-${role}`).textContent = '';
+            delete countdownIntervals[role];
+        }
+    }
     async function saveSignature(role) {
         const name = document.getElementById(`name-${role}`).value.trim();
         const statusEl = document.getElementById(`status-${role}`);
@@ -493,23 +702,9 @@
         }
         const signatureData = pads[role].toDataURL('image/png');
         const now = new Date().toISOString();
-        if (!supabase) {
-            document.getElementById(`preview-img-${role}`).src = signatureData;
-            document.getElementById(`preview-name-${role}`).textContent = name;
-            document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date());
-            document.getElementById(`preview-${role}`).style.display = 'block';
-            document.getElementById(`name-${role}`).style.display = 'none';
-            document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
-            document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
-            statusEl.textContent = '\u2713 Signature Captured Locally';
-            statusEl.className = 'status-note success';
-            return;
-        }
-        try {
-            const { error } = await supabase
-                .from('signatures')
-                .upsert({ role, name, signature_data: signatureData, signed_at: now }, { onConflict: 'role', returning: 'minimal' });
-            if (error) throw error;
+        // Attempt to save via Supabase (JS client or REST). If not possible, still show preview locally.
+        const success = await upsertSignature(role, name, signatureData, now);
+        if (success) {
             document.getElementById(`preview-img-${role}`).src = signatureData;
             document.getElementById(`preview-name-${role}`).textContent = name;
             document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date());
@@ -519,10 +714,36 @@
             document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
             statusEl.textContent = '\u2713 Signed and Saved Successfully';
             statusEl.className = 'status-note success';
-        } catch (err) {
-            console.error('Error saving signature:', err);
-            statusEl.textContent = 'Error: ' + err.message;
-            statusEl.className = 'status-note error';
+            // Update the final signature summary
+            updateFinalPreview(role, name, signatureData, now);
+            // If the founder signs, record timestamp and start countdowns for other roles
+            if (role === 'founder') {
+                founderSignedAt = new Date(now);
+                setupCountdowns();
+            } else {
+                // If a team member signs, stop their countdown timer
+                stopCountdown(role);
+            }
+        } else {
+            // fallback to local preview if save failed
+            document.getElementById(`preview-img-${role}`).src = signatureData;
+            document.getElementById(`preview-name-${role}`).textContent = name;
+            document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date());
+            document.getElementById(`preview-${role}`).style.display = 'block';
+            document.getElementById(`name-${role}`).style.display = 'none';
+            document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
+            document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
+            statusEl.textContent = '\u2713 Signature Captured Locally';
+            statusEl.className = 'status-note success';
+            // Update the final signature summary
+            updateFinalPreview(role, name, signatureData, new Date());
+            // If the founder signed locally, still start countdowns
+            if (role === 'founder') {
+                founderSignedAt = new Date();
+                setupCountdowns();
+            } else {
+                stopCountdown(role);
+            }
         }
     }
     function clearSignature(role) {
@@ -560,6 +781,23 @@
             alert('Error generating PDF. Please try again.');
             btn.disabled = false;
             btn.textContent = 'Download Signed Agreement';
+        }
+    }
+
+    // Update the final signature summary for a given role. If the name or signature
+    // data is missing, this function does nothing. It populates the
+    // corresponding final image, name and date fields on the final page.
+    function updateFinalPreview(role, name, signatureData, signedAt) {
+        if (!name || !signatureData) return;
+        const imgEl = document.getElementById(`final-img-${role}`);
+        const nameEl = document.getElementById(`final-name-${role}`);
+        const dateEl = document.getElementById(`final-date-${role}`);
+        if (imgEl && nameEl && dateEl) {
+            imgEl.src = signatureData;
+            nameEl.textContent = name;
+            // Convert string or Date to Date object then format
+            const dateObj = (signedAt instanceof Date) ? signedAt : new Date(signedAt);
+            dateEl.textContent = formatDate(dateObj);
         }
     }
     </script>
