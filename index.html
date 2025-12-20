@@ -4,470 +4,597 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoatMouth Equity Allocation Agreement</title>
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+
     <!-- Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Load UMD build of Supabase that exposes window.supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.umd.js"></script>
+    <!-- Signature pad for capturing signatures -->
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+    <!-- jsPDF and html2canvas for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    
+
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 300;
-            max-width: 900px;
-            margin: 100px auto;
-            padding: 0 80px;
-            background: #ffffff;
-            color: #1a1a1a;
-            line-height: 1.9;
-            letter-spacing: 0.2px;
+            font-family: 'Crimson Text', serif;
+            font-size: 12pt;
+            line-height: 2;
+            color: #000;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+        .page-container {
+            max-width: 8.5in;
+            margin: 0 auto;
+            background: #fff;
+            padding: 1in 1in 1in 1.25in;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            min-height: 11in;
         }
         .letterhead {
             text-align: center;
-            margin-bottom: 120px;
+            margin-bottom: 0.5in;
+            padding-bottom: 0.3in;
+            border-bottom: 3px double #000;
         }
-        .logo {
-            height: 240px;
-            margin-bottom: 20px;
+        .logo { max-height: 1.5in; margin-bottom: 0.2in; }
+        .company-name {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 24pt;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 0.1in;
         }
         .company-type {
-            font-size: 20px;
-            color: #555555;
-            margin: 0;
-            font-weight: 400;
+            font-size: 10pt;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
         h1 {
-            font-family: 'Roboto Slab', serif;
-            font-size: 36px;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 18pt;
             font-weight: 700;
-            text-align: left;
-            margin: 0 0 60px 0;
-            color: #000000;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0.4in 0;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 0.15in 0;
         }
         h2 {
-            font-family: 'Roboto Slab', serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: #000000;
-            margin: 60px 0 20px 0;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 13pt;
+            font-weight: 700;
+            margin-top: 0.3in;
+            margin-bottom: 0.15in;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        p {
-            font-size: 17px;
-            margin: 16px 0;
+        p { text-align: justify; text-indent: 0.5in; margin-bottom: 0.15in; }
+        p.no-indent { text-indent: 0; }
+        ul, ol { margin-left: 0.75in; margin-bottom: 0.2in; }
+        li { margin-bottom: 0.1in; text-align: justify; }
+        strong { font-weight: 700; }
+        .recitals { font-style: italic; margin: 0.2in 0; }
+        .article { margin-bottom: 0.3in; }
+        .note-box {
+            border: 2px solid #000;
+            padding: 0.2in;
+            margin: 0.3in 0;
+            background: #f9f9f9;
         }
-        strong {
-            font-weight: 600;
-            color: #000000;
+        .note-box p { text-indent: 0; font-size: 10pt; line-height: 1.6; }
+        .signature-page {
+            page-break-before: always;
+            margin-top: 0.5in;
+            padding-top: 0.3in;
+            border-top: 3px double #000;
         }
-        ul, ol {
-            padding-left: 30px;
-            margin: 16px 0;
-        }
-        li {
-            margin-bottom: 10px;
-            font-size: 17px;
-        }
-        .note {
-            background: #f8f9fa;
-            padding: 25px;
-            margin: 60px 0;
-            font-size: 15px;
-            font-style: italic;
-            color: #444444;
-            border-left: 4px solid #cccccc;
-            border-radius: 4px;
-        }
-        .signature-section {
-            margin: 100px 0 60px 0;
+        .signature-page h2 { text-align: center; margin-bottom: 0.4in; }
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4in;
+            margin-top: 0.3in;
         }
         .sig-box {
-            margin-bottom: 80px;
+            border: 2px solid #000;
+            padding: 0.25in;
+            background: #fafafa;
+            page-break-inside: avoid;
         }
         .sig-header {
-            font-family: 'Roboto Slab', serif;
-            font-size: 19px;
-            font-weight: 500;
-            color: #000000;
-            margin-bottom: 12px;
-        }
-        .signed-preview {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f0f0f0;
-            border-radius: 8px;
-            display: none;
-        }
-        .signed-preview img {
-            max-height: 100px;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 11pt;
+            font-weight: 700;
+            margin-bottom: 0.1in;
+            padding-bottom: 0.05in;
             border-bottom: 1px solid #000;
-            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .signed-info {
-            font-size: 15px;
-            color: #555;
-        }
-        .signed-info strong {
-            color: #000;
-        }
+        .sig-role { font-size: 9pt; color: #555; margin-bottom: 0.15in; font-style: italic; }
         .name-input {
             width: 100%;
-            padding: 16px;
-            font-size: 18px;
-            border: 1px solid #dddddd;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            background: #ffffff;
+            padding: 8px;
+            font-size: 11pt;
+            font-family: 'Crimson Text', serif;
+            border: 1px solid #000;
+            margin-bottom: 0.15in;
+            background: #fff;
         }
         .canvas-wrapper {
             position: relative;
             width: 100%;
-            height: 220px;
-            border: 2px solid #000000;
-            border-radius: 8px;
-            background: #ffffff;
-            overflow: hidden;
-            margin-bottom: 20px;
+            height: 1.2in;
+            border: 1px solid #000;
+            background: #fff;
+            margin-bottom: 0.1in;
+            cursor: crosshair;
+        }
+        .canvas-wrapper::before {
+            content: "Sign here with mouse or touch";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ccc;
+            font-size: 9pt;
+            pointer-events: none;
+            z-index: 0;
         }
         canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: relative;
             width: 100%;
             height: 100%;
+            touch-action: none;
+            z-index: 1;
         }
         .sig-actions {
-            text-align: right;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 0.1in;
         }
         .sig-actions button {
-            padding: 12px 24px;
-            margin-left: 16px;
-            font-size: 15px;
-            font-weight: 500;
-            border: none;
-            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 9pt;
+            font-weight: 600;
+            font-family: 'Crimson Text', serif;
+            border: 1px solid #000;
+            background: #fff;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
         }
-        .sig-actions button.save-sig {
-            background: #000000;
-            color: white;
+        .sig-actions button.save-sig { background: #000; color: #fff; }
+        .sig-actions button.save-sig:hover { background: #333; }
+        .sig-actions button.clear:hover { background: #e0e0e0; }
+        .status-note { font-size: 9pt; margin-top: 8px; text-align: right; font-weight: 600; }
+        .status-note.success { color: #006400; }
+        .status-note.error { color: #8b0000; }
+        .signed-preview {
+            margin-top: 0.1in;
+            padding: 0.1in;
+            background: #fff;
+            border: 1px solid #000;
+            display: none;
         }
-        .sig-actions button.clear {
-            background: #eeeeee;
-            color: #000000;
+        .signed-preview img {
+            max-height: 0.8in;
+            border-bottom: 2px solid #000;
+            margin-bottom: 8px;
+            display: block;
+            width: 100%;
         }
-        .status-note {
-            font-size: 15px;
-            font-weight: 500;
-            margin-top: 12px;
-            text-align: right;
+        .signed-info { font-size: 9pt; line-height: 1.4; }
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 100%;
+            margin: 0.3in 0 0.05in 0;
         }
-        .status-note.success {
-            color: #000000;
-        }
-        .status-note.error {
-            color: #d32f2f;
+        .signature-label {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         #download-btn {
             display: block;
-            width: 400px;
-            margin: 100px auto 60px;
-            padding: 20px;
-            font-size: 20px;
-            font-weight: 500;
-            background: #000000;
-            color: white;
-            border: none;
-            border-radius: 8px;
+            width: 100%;
+            max-width: 4in;
+            margin: 0.5in auto;
+            padding: 0.15in;
+            font-size: 12pt;
+            font-weight: 700;
+            font-family: 'Libre Baskerville', serif;
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
         }
-        #download-btn:hover {
-            background: #222222;
-        }
+        #download-btn:hover { background: #fff; color: #000; }
+        #download-btn:disabled { background: #999; border-color: #999; cursor: not-allowed; }
         .instructions {
             text-align: center;
-            font-size: 15px;
-            color: #777777;
-            margin-top: 80px;
-            line-height: 1.7;
+            font-size: 10pt;
+            color: #555;
+            margin: 0.3in 0;
+            padding: 0.2in;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+            line-height: 1.6;
+        }
+        .instructions strong {
+            display: block;
+            margin-bottom: 0.1in;
+            color: #000;
+            font-size: 11pt;
+        }
+        .document-footer {
+            margin-top: 0.5in;
+            padding-top: 0.2in;
+            border-top: 1px solid #000;
+            text-align: center;
+            font-size: 8pt;
+            color: #666;
+        }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .page-container { box-shadow: none; padding: 0.5in 1in; }
+            #download-btn, .instructions, .sig-actions { display: none !important; }
+        }
+        @media screen and (max-width: 768px) {
+            .page-container { padding: 0.5in; }
+            .signature-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="letterhead">
-        <img src="mainlogo.png" alt="GoatMouth Logo" class="logo">
-        <p class="company-type">Limited Liability Company</p>
+    <div class="page-container">
+        <div class="letterhead">
+            <img src="mainlogo.png" alt="GoatMouth Logo" class="logo">
+            <div class="company-name">GOATMOUTH</div>
+            <div class="company-type">Limited Liability Company</div>
+        </div>
+
+        <h1>Equity Allocation Agreement</h1>
+
+        <p class="no-indent recitals">
+            <strong>THIS EQUITY ALLOCATION AGREEMENT</strong> is made and entered into as of the date of last signature below (the "Effective Date"), by and among the undersigned parties (collectively, the "Parties").
+        </p>
+
+        <div class="article">
+            <h2>Article I: Parties</h2>
+            <p class="no-indent">The Parties to this Agreement are as follows:</p>
+            <ul>
+                <li><strong>Founder:</strong> Ruel McNeil (hereinafter referred to as the "Founder")</li>
+                <li><strong>Team Member 1:</strong> Ineiko McBean</li>
+                <li><strong>Team Member 2:</strong> Shaquille Simpson</li>
+                <li><strong>Team Member 3:</strong> Darren Downer</li>
+            </ul>
+        </div>
+
+        <div class="article">
+            <h2>Article II: Recitals</h2>
+            <p>WHEREAS, the Parties desire to establish and formalize the allocation of membership interests in GoatMouth, a Limited Liability Company (the "Company");</p>
+            <p>WHEREAS, the Parties acknowledge their respective contributions and commitments to the success and growth of the Company;</p>
+            <p>NOW, THEREFORE, in consideration of the mutual covenants and agreements contained herein, and for other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the Parties agree as follows:</p>
+        </div>
+
+        <div class="article">
+            <h2>Article III: Equity Allocation</h2>
+            <p class="no-indent">The Parties agree to the following allocation of membership interests in the Company:</p>
+            <ol>
+                <li><strong>Founder's Interest:</strong> The Founder shall retain fifty percent (50%) of the Company's membership interests, representing the Founder's initial contribution, vision, and leadership role in establishing the Company.</li>
+                <li><strong>Initial Team Member Interests:</strong> Each of the three Team Members (Ineiko McBean, Shaquille Simpson, and Darren Downer) shall initially receive ten percent (10%) of the Company's membership interests upon making their first significant contribution to the Company. Such contributions may include, but are not limited to:
+                    <ul style="list-style-type: lower-alpha;">
+                        <li>Completion of an initial assigned task or project;</li>
+                        <li>Delivery of functional code or technical work product;</li>
+                        <li>Making a financial investment in the Company;</li>
+                        <li>Any other milestone mutually agreed upon by the Parties.</li>
+                    </ul>
+                </li>
+                <li><strong>Contribution Pool:</strong> The remaining twenty percent (20%) of membership interests shall constitute a contribution pool (the "Pool"). The Pool shall be allocated over time based on additional contributions by any Party, including but not limited to:
+                    <ul style="list-style-type: lower-alpha;">
+                        <li>Financial investments;</li>
+                        <li>Development work and technical contributions;</li>
+                        <li>Business development activities;</li>
+                        <li>Marketing and promotional efforts;</li>
+                        <li>Other significant efforts that add demonstrable value to the Company.</li>
+                    </ul>
+                </li>
+                <li><strong>Pool Allocation Process:</strong> Allocations from the Pool shall be determined by mutual agreement of the Parties holding majority interests at the time of such allocation. All allocations shall be made with a focus on fairness, transparency, and proportionality to the value contributed.</li>
+            </ol>
+        </div>
+
+        <div class="article">
+            <h2>Article IV: Additional Terms and Conditions</h2>
+            <ol>
+                <li><strong>Operating Agreement:</strong> All membership interests allocated pursuant to this Agreement shall remain subject to the terms of the Company's Operating Agreement, to be executed separately by all members.</li>
+                <li><strong>Vesting Schedule:</strong> The Parties acknowledge that vesting schedules and conditions may be established in the formal Operating Agreement to align incentives and ensure long-term commitment.</li>
+                <li><strong>Preliminary Nature:</strong> This document constitutes a preliminary agreement regarding equity distribution and shall be superseded by formal legal documentation prepared by qualified legal counsel.</li>
+                <li><strong>Good Faith Cooperation:</strong> All Parties commit to acting in good faith, with honesty, transparency, and mutual respect, and to collaborating diligently toward the success and growth of the Company.</li>
+                <li><strong>Amendment:</strong> This Agreement may be amended only by written instrument executed by all Parties.</li>
+                <li><strong>Governing Law:</strong> This Agreement shall be governed by and construed in accordance with the laws applicable to the Company's jurisdiction of formation.</li>
+            </ol>
+        </div>
+
+        <div class="note-box">
+            <p><strong>IMPORTANT NOTICE:</strong> This document does not constitute formal legal advice and has not been prepared by an attorney. The Parties are strongly encouraged to consult with qualified legal counsel to prepare binding legal documents, including a comprehensive LLC Operating Agreement, appropriate to their jurisdiction and specific circumstances. The Parties acknowledge that they have had the opportunity to seek independent legal advice before executing this Agreement.</p>
+        </div>
+
+        <div class="signature-page">
+            <h2>Signature Page</h2>
+            <p class="no-indent" style="text-align: center;">IN WITNESS WHEREOF, the Parties have executed this Equity Allocation Agreement as of the dates set forth below.</p>
+
+            <div class="signature-grid">
+                <!-- Founder -->
+                <div class="sig-box">
+                    <div class="sig-header">Ruel McNeil</div>
+                    <div class="sig-role">Founder</div>
+                    <input type="text" class="name-input" id="name-founder" placeholder="Type full legal name">
+                    <div class="canvas-wrapper"><canvas id="canvas-founder"></canvas></div>
+                    <div class="sig-actions">
+                        <button class="save-sig" onclick="saveSignature('founder')">Save Signature</button>
+                        <button class="clear" onclick="clearSignature('founder')">Clear</button>
+                    </div>
+                    <div class="status-note" id="status-founder"></div>
+                    <div class="signed-preview" id="preview-founder">
+                        <img id="preview-img-founder" alt="Signature">
+                        <div class="signature-line"></div>
+                        <div class="signed-info">
+                            <strong id="preview-name-founder"></strong><br>
+                            Date: <strong id="preview-date-founder"></strong>
+                        </div>
+                    </div>
+                </div>
+                <!-- Team Member 1 -->
+                <div class="sig-box">
+                    <div class="sig-header">Ineiko McBean</div>
+                    <div class="sig-role">Team Member</div>
+                    <input type="text" class="name-input" id="name-tm1" placeholder="Type full legal name">
+                    <div class="canvas-wrapper"><canvas id="canvas-tm1"></canvas></div>
+                    <div class="sig-actions">
+                        <button class="save-sig" onclick="saveSignature('tm1')">Save Signature</button>
+                        <button class="clear" onclick="clearSignature('tm1')">Clear</button>
+                    </div>
+                    <div class="status-note" id="status-tm1"></div>
+                    <div class="signed-preview" id="preview-tm1">
+                        <img id="preview-img-tm1" alt="Signature">
+                        <div class="signature-line"></div>
+                        <div class="signed-info">
+                            <strong id="preview-name-tm1"></strong><br>
+                            Date: <strong id="preview-date-tm1"></strong>
+                        </div>
+                    </div>
+                </div>
+                <!-- Team Member 2 -->
+                <div class="sig-box">
+                    <div class="sig-header">Shaquille Simpson</div>
+                    <div class="sig-role">Team Member</div>
+                    <input type="text" class="name-input" id="name-tm2" placeholder="Type full legal name">
+                    <div class="canvas-wrapper"><canvas id="canvas-tm2"></canvas></div>
+                    <div class="sig-actions">
+                        <button class="save-sig" onclick="saveSignature('tm2')">Save Signature</button>
+                        <button class="clear" onclick="clearSignature('tm2')">Clear</button>
+                    </div>
+                    <div class="status-note" id="status-tm2"></div>
+                    <div class="signed-preview" id="preview-tm2">
+                        <img id="preview-img-tm2" alt="Signature">
+                        <div class="signature-line"></div>
+                        <div class="signed-info">
+                            <strong id="preview-name-tm2"></strong><br>
+                            Date: <strong id="preview-date-tm2"></strong>
+                        </div>
+                    </div>
+                </div>
+                <!-- Team Member 3 -->
+                <div class="sig-box">
+                    <div class="sig-header">Darren Downer</div>
+                    <div class="sig-role">Team Member</div>
+                    <input type="text" class="name-input" id="name-tm3" placeholder="Type full legal name">
+                    <div class="canvas-wrapper"><canvas id="canvas-tm3"></canvas></div>
+                    <div class="sig-actions">
+                        <button class="save-sig" onclick="saveSignature('tm3')">Save Signature</button>
+                        <button class="clear" onclick="clearSignature('tm3')">Clear</button>
+                    </div>
+                    <div class="status-note" id="status-tm3"></div>
+                    <div class="signed-preview" id="preview-tm3">
+                        <img id="preview-img-tm3" alt="Signature">
+                        <div class="signature-line"></div>
+                        <div class="signed-info">
+                            <strong id="preview-name-tm3"></strong><br>
+                            Date: <strong id="preview-date-tm3"></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <strong>Signing Instructions</strong>
+            1. Type your full legal name in the text field<br>
+            2. Draw your signature using mouse or touch<br>
+            3. Click "Save Signature" to timestamp and securely store<br>
+            4. Once all parties have signed, download the final PDF
+        </div>
+
+        <button id="download-btn" onclick="downloadPDF()">Download Signed Agreement</button>
+
+        <div class="document-footer">
+            End of Document | GoatMouth LLC Equity Allocation Agreement<br>
+            Page 1 of 1
+        </div>
     </div>
-
-    <h1>Equity Allocation Agreement</h1>
-
-    <h2>Parties</h2>
-    <p>The following individuals (collectively, the “Parties”) agree to the equity allocation described below:</p>
-    <ul>
-        <li><strong>Founder:</strong> Ruel McNeil, hereinafter referred to as the "Founder"</li>
-        <li><strong>Team Member 1:</strong> Ineiko McBean, hereinafter referred to as "Team Member 1"</li>
-        <li><strong>Team Member 2:</strong> Shaquille Simpson, hereinafter referred to as "Team Member 2"</li>
-        <li><strong>Team Member 3:</strong> Darren Downer, hereinafter referred to as "Team Member 3"</li>
-    </ul>
-
-    <h2>Equity Arrangement</h2>
-    <p>The Parties agree to the following allocation of membership interests in GoatMouth:</p>
-    <ol>
-        <li>The Founder shall retain <strong>50%</strong> of the Company’s membership interests.</li>
-        <li>Each of the three Team Members shall initially receive <strong>10%</strong> of the Company’s membership interests upon making their first significant contribution (such as completing an initial task, delivering code, making a financial investment, or another agreed-upon milestone).</li>
-        <li>The remaining <strong>20%</strong> shall form a contribution pool and be allocated over time based on further contributions, including but not limited to financial investments, development work, business development, marketing, or other significant efforts. Allocations from this pool will be determined by mutual agreement of the Parties holding majority interests at the time, with a focus on fairness and value contributed.</li>
-    </ol>
-    <p>This structure ensures that every participant is rewarded in proportion to the time and value they contribute to the Company.</p>
-
-    <h2>Additional Terms</h2>
-    <ul>
-        <li>All membership interests remain subject to the future LLC Operating Agreement and any vesting schedules to be established.</li>
-        <li>This document is a preliminary agreement on equity distribution and will be superseded by formal legal documentation prepared by a qualified attorney.</li>
-        <li>The Parties commit to acting in good faith and collaborating toward the success of the Company.</li>
-    </ul>
-
-    <div class="note">
-        <strong>Important:</strong> This document does not constitute formal legal advice. The Parties are strongly encouraged to consult a qualified attorney to prepare binding legal documents (including the LLC Operating Agreement) appropriate to their jurisdiction.
-    </div>
-
-    <div class="signature-section">
-        <h2>Signatures</h2>
-        <p>By providing their name and signature below, each Party confirms their understanding and acceptance of the terms above.</p>
-
-        <!-- Founder -->
-        <div class="sig-box">
-            <div class="sig-header">Ruel McNeil</div>
-            <input type="text" class="name-input" id="name-founder" placeholder="Type full name">
-            <div class="canvas-wrapper">
-                <canvas id="canvas-founder"></canvas>
-            </div>
-            <div class="sig-actions">
-                <button class="save-sig" onclick="saveSignature('founder')">Save Signature</button>
-                <button class="clear" onclick="clearSignature('founder')">Clear</button>
-            </div>
-            <div class="status-note" id="status-founder"></div>
-
-            <div class="signed-preview" id="preview-founder">
-                <img id="preview-img-founder" alt="Signature preview">
-                <div class="signed-info">
-                    Signed by: <strong id="preview-name-founder"></strong><br>
-                    Date: <strong id="preview-date-founder"></strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- Team Member 1 -->
-        <div class="sig-box">
-            <div class="sig-header">Ineiko McBean</div>
-            <input type="text" class="name-input" id="name-tm1" placeholder="Type full name">
-            <div class="canvas-wrapper">
-                <canvas id="canvas-tm1"></canvas>
-            </div>
-            <div class="sig-actions">
-                <button class="save-sig" onclick="saveSignature('tm1')">Save Signature</button>
-                <button class="clear" onclick="clearSignature('tm1')">Clear</button>
-            </div>
-            <div class="status-note" id="status-tm1"></div>
-
-            <div class="signed-preview" id="preview-tm1">
-                <img id="preview-img-tm1" alt="Signature preview">
-                <div class="signed-info">
-                    Signed by: <strong id="preview-name-tm1"></strong><br>
-                    Date: <strong id="preview-date-tm1"></strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- Team Member 2 -->
-        <div class="sig-box">
-            <div class="sig-header">Shaquille Simpson</div>
-            <input type="text" class="name-input" id="name-tm2" placeholder="Type full name">
-            <div class="canvas-wrapper">
-                <canvas id="canvas-tm2"></canvas>
-            </div>
-            <div class="sig-actions">
-                <button class="save-sig" onclick="saveSignature('tm2')">Save Signature</button>
-                <button class="clear" onclick="clearSignature('tm2')">Clear</button>
-            </div>
-            <div class="status-note" id="status-tm2"></div>
-
-            <div class="signed-preview" id="preview-tm2">
-                <img id="preview-img-tm2" alt="Signature preview">
-                <div class="signed-info">
-                    Signed by: <strong id="preview-name-tm2"></strong><br>
-                    Date: <strong id="preview-date-tm2"></strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- Team Member 3 -->
-        <div class="sig-box">
-            <div class="sig-header">Darren Downer</div>
-            <input type="text" class="name-input" id="name-tm3" placeholder="Type full name">
-            <div class="canvas-wrapper">
-                <canvas id="canvas-tm3"></canvas>
-            </div>
-            <div class="sig-actions">
-                <button class="save-sig" onclick="saveSignature('tm3')">Save Signature</button>
-                <button class="clear" onclick="clearSignature('tm3')">Clear</button>
-            </div>
-            <div class="status-note" id="status-tm3"></div>
-
-            <div class="signed-preview" id="preview-tm3">
-                <img id="preview-img-tm3" alt="Signature preview">
-                <div class="signed-info">
-                    Signed by: <strong id="preview-name-tm3"></strong><br>
-                    Date: <strong id="preview-date-tm3"></strong>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <button id="download-btn" onclick="downloadPDF()">Download Signed Agreement as PDF</button>
 
     <script>
         // Supabase Configuration
         const SUPABASE_URL = 'https://hvdivdqxsdhabeurwkfb.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2ZGl2ZHF4c2RoYWJldXJ3a2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDkwNDIsImV4cCI6MjA4MTEyNTA0Mn0.h6WOImT19AyGZIrqeRZ1axkPJhftlZtW6HNKD5gRebI';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        // Create Supabase client only if the global supabase is available
+        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
         const { jsPDF } = window.jspdf;
         const pads = {};
         const roles = ['founder', 'tm1', 'tm2', 'tm3'];
-
+        // Format date professionally
         function formatDate(date) {
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+            return date.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) +
+                   ' at ' + date.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12: true });
         }
-
-        // Initialize SignaturePad for each canvas
-        roles.forEach((role) => {
+        // Initialize signature pads
+        function initSignaturePad(role) {
             const canvas = document.getElementById(`canvas-${role}`);
-            pads[role] = new SignaturePad(canvas, {
-                backgroundColor: 'rgb(255,255,255)',
-                penColor: 'rgb(0, 0, 0)'
-            });
-
-            // Proper resize function that preserves signature
             function resizeCanvas() {
-                const data = pads[role].toDataURL();
-
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                // Preserve existing drawing before resizing
+                const data = pads[role] && !pads[role].isEmpty() ? pads[role].toDataURL() : null;
                 canvas.width = canvas.offsetWidth * ratio;
                 canvas.height = canvas.offsetHeight * ratio;
                 canvas.getContext('2d').scale(ratio, ratio);
-
-                pads[role].clear();
-                pads[role].fromDataURL(data);
+                if (data) {
+                    pads[role].fromDataURL(data);
+                }
             }
-
+            pads[role] = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255,255,255)',
+                penColor: 'rgb(0,0,0)',
+                minWidth: 0.5,
+                maxWidth: 2.5,
+                throttle: 16,
+                minDistance: 5,
+                velocityFilterWeight: 0.7
+            });
+            // Initial resize
+            resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
-            resizeCanvas(); // Initial resize
-        });
-
-        // Load signatures from Supabase on page load
-        roles.forEach(async (role) => {
-            const { data, error } = await supabase
-                .from('goatmouth_signatures')
-                .select('name, signature_data, signed_at')
-                .eq('role', role)
-                .single();
-
-            if (data) {
-                document.getElementById(`name-${role}`).value = data.name;
-                pads[role].fromDataURL(data.signature_data);
-
-                document.getElementById(`preview-img-${role}`).src = data.signature_data;
-                document.getElementById(`preview-name-${role}`).textContent = data.name;
-                document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date(data.signed_at));
-                document.getElementById(`preview-${role}`).style.display = 'block';
-
-                // Hide signing interface
-                document.getElementById(`name-${role}`).style.display = 'none';
-                document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
-                document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
-
-                document.getElementById(`status-${role}`).textContent = '✓ Already signed';
-                document.getElementById(`status-${role}`).className = 'status-note success';
-            } else if (error && error.code !== 'PGRST116') {
-                document.getElementById(`status-${role}`).textContent = 'Error loading';
-                document.getElementById(`status-${role}`).className = 'status-note error';
+            return pads[role];
+        }
+        // Wait for DOM ready
+        window.addEventListener('DOMContentLoaded', () => {
+            roles.forEach(role => initSignaturePad(role));
+            // Load existing signatures from Supabase if client is available
+            if (supabase) {
+                roles.forEach(async role => {
+                    try {
+                        const { data, error } = await supabase
+                            .from('signatures')
+                            .select('name, signature_data, signed_at')
+                            .eq('role', role)
+                            .maybeSingle();
+                        if (data && !error) {
+                            document.getElementById(`name-${role}`).value = data.name;
+                            pads[role].fromDataURL(data.signature_data);
+                            document.getElementById(`preview-img-${role}`).src = data.signature_data;
+                            document.getElementById(`preview-name-${role}`).textContent = data.name;
+                            document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date(data.signed_at));
+                            document.getElementById(`preview-${role}`).style.display = 'block';
+                            document.getElementById(`name-${role}`).style.display = 'none';
+                            document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
+                            document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
+                            document.getElementById(`status-${role}`).textContent = '\u2713 Signed and Saved';
+                            document.getElementById(`status-${role}`).className = 'status-note success';
+                        }
+                    } catch (err) {
+                        console.error(`Error loading signature for ${role}:`, err);
+                    }
+                });
             }
         });
-
         async function saveSignature(role) {
-            const nameInput = document.getElementById(`name-${role}`).value.trim();
+            const name = document.getElementById(`name-${role}`).value.trim();
             const statusEl = document.getElementById(`status-${role}`);
-
-            statusEl.textContent = '';
+            statusEl.textContent = 'Saving...';
             statusEl.className = 'status-note';
-
-            if (!nameInput) return alert("Please type your full name.");
-            if (pads[role].isEmpty()) return alert("Please draw your signature.");
-
-            const signatureData = pads[role].toDataURL();
+            if (!name) {
+                alert('Please type your full legal name.');
+                statusEl.textContent = '';
+                return;
+            }
+            if (pads[role].isEmpty()) {
+                alert('Please draw your signature.');
+                statusEl.textContent = '';
+                return;
+            }
+            const signatureData = pads[role].toDataURL('image/png');
             const now = new Date().toISOString();
-
-            const { error } = await supabase
-                .from('goatmouth_signatures')
-                .upsert({
-                    role,
-                    name: nameInput,
-                    signature_data: signatureData,
-                    signed_at: now
-                }, { onConflict: 'role' });
-
-            if (error) {
-                statusEl.textContent = "Save failed: " + error.message;
-                statusEl.className += ' error';
-            } else {
+            // If Supabase is not configured, skip remote save and just show preview
+            if (!supabase) {
                 document.getElementById(`preview-img-${role}`).src = signatureData;
-                document.getElementById(`preview-name-${role}`).textContent = nameInput;
+                document.getElementById(`preview-name-${role}`).textContent = name;
                 document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date());
                 document.getElementById(`preview-${role}`).style.display = 'block';
-
                 document.getElementById(`name-${role}`).style.display = 'none';
                 document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
                 document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
-
-                statusEl.textContent = '✓ Signed and saved successfully!';
-                statusEl.className += ' success';
+                statusEl.textContent = '\u2713 Signature Captured Locally';
+                statusEl.className = 'status-note success';
+                return;
+            }
+            try {
+                const { error } = await supabase
+                    .from('signatures')
+                    .upsert({ role, name, signature_data: signatureData, signed_at: now }, { onConflict: 'role', returning: 'minimal' });
+                if (error) throw error;
+                document.getElementById(`preview-img-${role}`).src = signatureData;
+                document.getElementById(`preview-name-${role}`).textContent = name;
+                document.getElementById(`preview-date-${role}`).textContent = formatDate(new Date());
+                document.getElementById(`preview-${role}`).style.display = 'block';
+                document.getElementById(`name-${role}`).style.display = 'none';
+                document.querySelector(`#canvas-${role}`).parentElement.style.display = 'none';
+                document.querySelector(`#canvas-${role}`).closest('.sig-box').querySelector('.sig-actions').style.display = 'none';
+                statusEl.textContent = '\u2713 Signed and Saved Successfully';
+                statusEl.className = 'status-note success';
+            } catch (err) {
+                console.error('Error saving signature:', err);
+                statusEl.textContent = 'Error: ' + err.message;
+                statusEl.className = 'status-note error';
             }
         }
-
         function clearSignature(role) {
             pads[role].clear();
             document.getElementById(`status-${role}`).textContent = '';
+            document.getElementById(`status-${role}`).className = 'status-note';
         }
-
         async function downloadPDF() {
             const btn = document.getElementById('download-btn');
             btn.disabled = true;
-            btn.textContent = "Generating PDF...";
-
-            const canvas = await html2canvas(document.body, { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height] });
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save('GoatMouth_Equity_Allocation_Agreement_Signed.pdf');
-
-            btn.disabled = false;
-            btn.textContent = "Download Signed Agreement as PDF";
+            btn.textContent = 'Generating PDF...';
+            try {
+                const canvas = await html2canvas(document.querySelector('.page-container'), { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' });
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+                const imgX = (pdfWidth - canvas.width * ratio) / 2;
+                const imgY = 0;
+                pdf.addImage(imgData, 'PNG', imgX, imgY, canvas.width * ratio, canvas.height * ratio);
+                const timestamp = new Date().toISOString().split('T')[0];
+                pdf.save(`GoatMouth_Equity_Agreement_${timestamp}.pdf`);
+                btn.disabled = false;
+                btn.textContent = 'Download Signed Agreement';
+            } catch (err) {
+                console.error('Error generating PDF:', err);
+                alert('Error generating PDF. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Download Signed Agreement';
+            }
         }
     </script>
-
-    <p class="instructions">
-        Instructions:<br>
-        • Type your full name and draw your signature (mouse or touch)<br>
-        • Click “Save Signature” – it will be timestamped and stored<br>
-        • Once saved, everyone will see your signed preview<br>
-        • When all have signed → Download the final PDF
-    </p>
-
 </body>
 </html>
